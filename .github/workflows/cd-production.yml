@@ -1,0 +1,29 @@
+name: CD Production
+
+on:
+  push:
+    branches:
+      - main
+      - 'hotfix/**'
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate release
+        run: |
+          echo "Production deployment triggered from $GITHUB_REF"
+
+      - name: Run final checks
+        run: |
+          python -m unittest discover -s tests -v
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment"
+          mkdir -p deploy
+          echo "production-${GITHUB_SHA}" > deploy/production.txt

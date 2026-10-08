@@ -1,0 +1,29 @@
+name: CD Staging
+
+on:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Deploy to staging
+        run: |
+          echo "Deploying release branch to staging environment"
+          mkdir -p deploy
+          echo "staging-${GITHUB_SHA}" > deploy/staging.txt
+
+      - name: Smoke test
+        run: |
+          python -m unittest discover -s tests -v
